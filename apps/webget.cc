@@ -16,6 +16,7 @@ void get_URL(const string &host, const string &path) {
         auto reply = tcpsocket.read();
         cout << reply;
     }
+    tcpsocket.close();
 
     // You will need to connect to the "http" service on
     // the computer whose name is in the "host" string,
@@ -26,7 +27,7 @@ void get_URL(const string &host, const string &path) {
     // the "eof" (end of file).
 
     cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
-    cerr << "Warning: get_URL() has not been implemented yet.\n";
+    // cerr << "Warning: get_URL() has not been implemented yet.\n";
 }
 
 int main(int argc, char *argv[]) {
