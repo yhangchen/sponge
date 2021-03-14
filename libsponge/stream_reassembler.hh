@@ -4,8 +4,8 @@
 #include "byte_stream.hh"
 
 #include <cstdint>
+#include <set>
 #include <string>
-
 //! \brief A class that assembles a series of excerpts from a byte stream (possibly out of order,
 //! possibly overlapping) into an in-order byte stream.
 class StreamReassembler {
@@ -14,6 +14,15 @@ class StreamReassembler {
 
     ByteStream _output;  //!< The reassembled in-order byte stream
     size_t _capacity;    //!< The maximum number of bytes
+    size_t _unassembled_bytes = 0;
+    size_t _index_read = 0;
+    bool _eof = false;
+    struct DataBlock {
+        size_t begin = 0;
+        std::string data = "";
+        bool operator<(const DataBlock &t) const { return (begin < t.begin); }  // order by the begin index
+    };
+    std::set<DataBlock> _BlockCollector = {};  // use std::set to perserve ordering
 
   public:
     //! \brief Construct a `StreamReassembler` that will store up to `capacity` bytes.
