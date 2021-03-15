@@ -15,7 +15,7 @@ class StreamReassembler {
     ByteStream _output;  //!< The reassembled in-order byte stream
     size_t _capacity;    //!< The maximum number of bytes
     size_t _unassembled_bytes = 0;
-    size_t _index_read = 0;
+    size_t _index_written = 0;
     bool _eof = false;
     struct DataBlock {
         size_t begin = 0;
@@ -51,6 +51,8 @@ class StreamReassembler {
     //! \note If the byte at a particular index has been pushed more than once, it
     //! should only be counted once for the purpose of this function.
     size_t unassembled_bytes() const;
+    size_t index_written() { return _index_written; }     // For lab 2.
+    bool input_ended() { return _output.input_ended(); }  // For lab 2.
 
     //! \brief Is the internal state empty (other than the output stream)?
     //! \returns `true` if no substrings are waiting to be assembled

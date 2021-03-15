@@ -20,19 +20,19 @@ StreamReassembler::StreamReassembler(const size_t capacity) : _output(capacity),
 void StreamReassembler::push_substring(const string &data, const size_t index, const bool eof) {
     DataBlock datablock;  // record the data into DataBlock.
     std::set<DataBlock> _BlockToErase = {};
-    if (_index_read + _capacity <= index) {  // data lies in "first unacceptable"
+    if (_index_written + _capacity <= index) {  // data lies in "first unacceptable"
         return;
     }
     size_t toCut = 0;
     std::string cutData = "";
-    if (index + data.length() <= _index_read) {  // data lies in "read already"
+    if (index + data.length() <= _index_written) {  // data lies in "read already"
         goto postpush;
     }
-    toCut = min(_index_read + _capacity - index, data.length());
+    toCut = min(_index_written + _capacity - index, data.length());
     cutData = data.substr(0, toCut);
-    if (index < _index_read) {
-        datablock.data = cutData.substr(_index_read - index, cutData.length() - _index_read + index);
-        datablock.begin = _index_read;
+    if (index < _index_written) {
+        datablock.data = cutData.substr(_index_written - index, cutData.length() - _index_written + index);
+        datablock.begin = _index_written;
     } else {
         datablock.data = cutData;
         datablock.begin = index;
@@ -67,11 +67,11 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
         _BlockCollector.erase(*it);
     }
     _BlockCollector.insert(datablock);
-    if (!_BlockCollector.empty() && _BlockCollector.begin()->begin == _index_read) {
+    if (!_BlockCollector.empty() && _BlockCollector.begin()->begin == _index_written) {
         const DataBlock BlocktoWrite = *_BlockCollector.begin();
         // modify _head_index and _unassembled_byte according to successful write to _output
         size_t write_bytes = _output.write(BlocktoWrite.data);
-        _index_read += write_bytes;
+        _index_written += write_bytes;
         _unassembled_bytes -= write_bytes;
         DataBlock UnfinisedBlocktoWrite;
         size_t BlocktoWriteLength = BlocktoWrite.data.length();
