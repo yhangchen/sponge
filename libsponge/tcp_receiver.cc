@@ -33,9 +33,9 @@ void TCPReceiver::segment_received(const TCPSegment &seg) {
         _abs_seqno = unwrap(WrappingInt32(seg.header().seqno.raw_value()), WrappingInt32(_isn), _abs_seqno);
 
     _reassembler.push_substring(
-        seg.payload().copy(), _abs_seqno - 1, seg.header().fin);  // absolute seqno start from 1 for payload.
-    _ackno = _reassembler.index_written() + 1;                    // include SYN (+1)
-    if (_reassembler.input_ended())                               // Easy to neglect! all payload finished, add FIN.
+        std::move(seg.payload().copy()), _abs_seqno - 1, seg.header().fin);  // absolute seqno start from 1 for payload.
+    _ackno = _reassembler.index_written() + 1;                               // include SYN (+1)
+    if (_reassembler.input_ended())  // Easy to neglect! all payload finished, add FIN.
         _ackno += 1;
 }
 
